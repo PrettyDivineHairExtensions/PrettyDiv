@@ -60,3 +60,38 @@ function requestCardNonce(event) {
  paymentForm.requestCardNonce();
 }
 paymentForm.build()
+\SquareConnect\Configuration::getDefaultConfiguration()->setAccessToken($access_token);
+$transactions_api = new \SquareConnect\Api\TransactionsApi();$request_body = array (
+  "card_nonce" => $nonce,
+  "amount_money" => array (
+    "amount" => 600,
+    "currency" => "USD"
+  ),
+  "idempotency_key" => uniqid()
+);$result = $transactions_api->charge($location_id, $request_body);//Get API client
+$ApiConfig = new \SquareConnect\Configuration();
+$ApiConfig->setAccessToken(MY_ACCESS_TOKEN);
+$ApiClient = new \SquareConnect\ApiClient($ApiConfig);
+$checkoutAPI = new SquareConnect\Api\CheckoutApi($ApiClient);//Set the item price
+$price = new \SquareConnect\Model\Money;
+$price->setAmount(600);
+$price->setCurrency('USD');
+
+//Create an item
+$book = new \SquareConnect\Model\CreateOrderRequestLineItem();
+$book->setName('The Shining');
+$book->setQuantity('2');
+$book->setBasePriceMoney($price);
+
+//Add the item to the order
+$lineItems = array();
+array_push($lineItems, $book);
+
+//Create the order
+$order = new \SquareConnect\Model\CreateOrderRequest();
+$order->setIdempotencyKey(uniqid());
+$order->setLineItems($lineItems);
+$checkout = new \SquareConnect\Model\CreateCheckoutRequest();
+$checkout->setIdempotencyKey(uniqid());
+$checkout->setOrder($order);$result = $checkoutClient->createCheckout($locationId,$checkout);
+$checkoutId = $result->getCheckout()->getId();window.location.href  = $result->getCheckout()->getCheckoutPageUrl();
