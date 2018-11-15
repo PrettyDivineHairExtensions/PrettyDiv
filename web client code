@@ -1,0 +1,62 @@
+<script type="text/javascript" src="https://js.squareup.com/v2/paymentform"></script>.sq-input {
+    border: 1px solid .black;
+    display: inline-block;
+}<form id="nonce-form" novalidate action="PATH/TO/PAYMENT/PROCESSING/PAGE" method="post">
+      <fieldset>
+        <span class="label">Card Number</span>
+        <div id="sq-card-number"></div>
+
+        <div class="third">
+          <span class="label">Expiration</span>
+          <div id="sq-expiration-date"></div>
+        </div>
+
+        <div class="third">
+          <span class="label">CVV</span>
+          <div id="sq-cvv"></div>
+        </div>
+
+        <div class="third">
+          <span class="label">Postal</span>
+          <div id="sq-postal-code"></div>
+        </div>
+      </fieldset>
+
+      <button id="sq-creditcard" class="button-credit-card" onclick="requestCardNonce(event)">Pay $6.00</button>
+
+      <div id="error"></div>
+
+      <!--
+        After a nonce is generated it will be assigned to this hidden input field.
+      -->
+      <input type="hidden" id="card-nonce" name="nonce">
+    </form>var paymentForm = new SqPaymentForm({
+ applicationId: applicationId,
+ inputClass: 'sq-input',
+ cardNumber: {
+   elementId: 'sq-card-number',
+   placeholder: '•••• •••• •••• ••••'
+ },
+ cvv: {
+   elementId: 'sq-cvv',
+   placeholder: 'CVV'
+ },
+ expirationDate: {
+   elementId: 'sq-expiration-date',
+   placeholder: 'MM/YY'
+ },
+ postalCode: {
+   elementId: 'sq-postal-code'
+ },
+ callbacks: {
+   cardNonceResponseReceived: function (errors, nonce, cardData) {
+     $('card-nonce').value = nonce;
+     $('nonce-form').submit();
+   }
+  }
+});
+function requestCardNonce(event) {
+ event.preventDefault();
+ paymentForm.requestCardNonce();
+}
+paymentForm.build()
